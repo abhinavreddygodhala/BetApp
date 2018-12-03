@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+
 use BlackBits\LaravelCognitoAuth\Auth\RegistersUsers;
 
 class RegisterController extends Controller
