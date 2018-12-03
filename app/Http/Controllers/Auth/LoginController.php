@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 use BlackBits\LaravelCognitoAuth\Auth\AuthenticatesUsers;
 
+
 class LoginController extends Controller
 {
     /*
@@ -20,6 +21,8 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
+
+
 
     /**
      * Where to redirect users after login.
