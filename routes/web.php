@@ -18,3 +18,6 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/payment', 'PaymentController@index')->name('payment');
+
+Route::get('/payments/process', 'PaymentsController@process')->name('payments.process');

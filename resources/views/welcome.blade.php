@@ -1,98 +1,42 @@
-<!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app')
 
-    <title>Laravel</title>
+@section('content')
+    @php
+    $cricketMatchesTxt = file_get_contents('https://cricapi.com/api/matches?apikey=vrncKDSNxPfmjk596fbb2Y794Pj2');
+    $cricketMatches = json_decode($cricketMatchesTxt);
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet" type="text/css">
+    @endphp
 
-    <!-- Styles -->
-    <style>
-        html, body {
-            background-color: #fff;
-            color: #636b6f;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 200;
-            height: 100vh;
-            margin: 0;
-        }
+    <div class="container">
+        @foreach($cricketMatches->matches as $item)
+        <div class="row justify-content-center mb-4">
 
-        .full-height {
-            height: 100vh;
-        }
+            <div class="col-md-8">
 
-        .flex-center {
-            align-items: center;
-            display: flex;
-            justify-content: center;
-        }
+                    @if(!isset($item->winner_team)&& $item->matchStarted)
+                <div class="card">
+                    <div class="card-header">{{$item->{'team-1'} .' vs '. $item->{'team-2'}.' - '. $item->type }}</div>
+                            @php
+                             $score = file_get_contents('https://cricapi.com/api/cricketScore?apikey=vrncKDSNxPfmjk596fbb2Y794Pj2&unique_id='.$item->unique_id);
+                             $matchscore = json_decode($score);
+                            @endphp
+                    <div class="card-body align-items-center ">
+                        Toss Won By {{$item->toss_winner_team}}
+                        <br><br>{{$matchscore->score}}
+                        @if(Auth::check())
 
-        .position-ref {
-            position: relative;
-        }
+                        <a href="{{route('payment')}}" class="btn float-right btn-dark nav-link">Bet</a>
+                            @endif
+                    </div>
 
-        .top-right {
-            position: absolute;
-            right: 10px;
-            top: 18px;
-        }
+                    <div>
 
-        .content {
-            text-align: center;
-        }
+                        @endif
 
-        .title {
-            font-size: 84px;
-        }
 
-        .links > a {
-            color: #636b6f;
-            padding: 0 25px;
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: .1rem;
-            text-decoration: none;
-            text-transform: uppercase;
-        }
-
-        .m-b-md {
-            margin-bottom: 30px;
-        }
-    </style>
-</head>
-<body>
-<div class="flex-center position-ref full-height">
-    @if (Route::has('login'))
-        <div class="top-right links">
-            @auth
-                <a href="{{ url('/home') }}">Home</a>
-            @else
-                <a href="{{ route('login') }}">Login</a>
-
-                @if (Route::has('register'))
-                    <a href="{{ route('register') }}">Register</a>
-                @endif
-            @endauth
-        </div>
-    @endif
-
-    <div class="content">
-        <div class="title m-b-md">
-            Laravel
-        </div>
-
-        <div class="links">
-            <a href="https://laravel.com/docs">Documentation</a>
-            <a href="https://laracasts.com">Laracasts</a>
-            <a href="https://laravel-news.com">News</a>
-            <a href="https://nova.laravel.com">Nova</a>
-            <a href="https://forge.laravel.com">Forge</a>
-            <a href="https://github.com/laravel/laravel">GitHub</a>
+            </div>
         </div>
     </div>
-</div>
-</body>
-</html>
+    @endforeach
+
+@endsection
