@@ -1,9 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Password;
+use BlackBits\LaravelCognitoAuth\CognitoClient;
 use BlackBits\LaravelCognitoAuth\Auth\ResetsPasswords;
+
 
 class ResetPasswordController extends Controller
 {
@@ -19,7 +22,24 @@ class ResetPasswordController extends Controller
     */
 
     use ResetsPasswords;
+    public function reset(Request $request)
+    {
+        $this->validate($request, $this->rules(), $this->validationErrorMessages());
 
+        $client = app()->make(CognitoClient::class);
+
+        $user = $client->getUser($request->email);
+
+        if ($user['UserStatus'] == CognitoClient::FORCE_PASSWORD_STATUS) {
+            $response = $this->forceNewPassword($request);
+        } else {
+            $response = $client->resetPassword($request->token, $request->email, $request->password);
+        }
+
+        return $response == Password::PASSWORD_RESET
+            ? $this->sendResetResponse($request,$response)
+            : $this->sendResetFailedResponse($request, $response);
+    }
     /**
      * Where to redirect users after resetting their password.
      *
